@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"tok/internal/analytics"
+	"github.com/gbudjeakp/tok/internal/analytics"
 )
 
 func newGainCmd() *cobra.Command {

@@ -43,7 +43,11 @@ After `tok init -g --copilot`, every command your agent runs is silently proxied
 ## Install
 
 ```bash
-go install github.com/you/tok@latest
+# Homebrew / pre-built binary (macOS/Linux)
+brew install gbudjeakp/tap/tok        # coming soon
+
+# Or directly with Go
+go install github.com/gbudjeakp/tok@latest
 tok init -g --copilot    # VS Code Copilot
 # or
 tok init -g              # Claude Code
@@ -56,6 +60,18 @@ tok init -g              # Claude Code
 3. Adds itself to PATH (via `go install`).
 
 Reload VS Code (or restart Claude Code) for the hook to take effect.
+
+### Switching from rtk
+
+tok is a superset of rtk — same concept, more filters, plus hook auto-rewriting, read guard, session cache, and waste analysis. To switch:
+
+```bash
+go install github.com/gbudjeakp/tok@latest
+tok init -g --copilot    # installs hook + skill (replaces rtk's setup)
+# remove rtk's hook if you had one — they do the same job, running both doubles execution
+```
+
+You cannot stack rtk and tok; pick one. `tok bench` will show you the side-by-side comparison on your actual commands.
 
 ---
 

@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"tok/internal/filter"
+	"github.com/gbudjeakp/tok/internal/filter"
 )
 
 // toolInput is the JSON shape Claude Code sends to the hook on stdin.

@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"tok/internal/filter"
+	"github.com/gbudjeakp/tok/internal/filter"
 )
 
 func newCheckCmd() *cobra.Command {

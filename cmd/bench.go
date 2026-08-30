@@ -8,7 +8,7 @@ import (
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
-	"tok/internal/filter"
+	"github.com/gbudjeakp/tok/internal/filter"
 )
 
 type benchCase struct {
@@ -44,7 +44,8 @@ Results show estimated token counts using cl100k_base (~3.5 chars/token).`,
 func runBench() error {
 	hasRtk := commandExists("rtk")
 
-	fmt.Println("tok bench — running suite…\n")
+	fmt.Println("tok bench — running suite…")
+	fmt.Println()
 
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
 

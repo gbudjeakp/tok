@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"tok/internal/filter"
+	"github.com/gbudjeakp/tok/internal/filter"
 )
 
 var ansiRe = regexp.MustCompile(`\033\[[0-9;]*m`)

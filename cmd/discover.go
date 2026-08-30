@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"tok/internal/analytics"
+	"github.com/gbudjeakp/tok/internal/analytics"
 )
 
 func newDiscoverCmd() *cobra.Command {

@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"tok/cmd"
-	"tok/internal/filter"
+	"github.com/gbudjeakp/tok/cmd"
+	"github.com/gbudjeakp/tok/internal/filter"
 )
 
 // knownSubcmds are cobra-handled; everything else routes to the filter engine.

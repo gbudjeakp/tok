@@ -5,8 +5,8 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"tok/internal/hook"
-	"tok/internal/skill"
+	"github.com/gbudjeakp/tok/internal/hook"
+	"github.com/gbudjeakp/tok/internal/skill"
 )
 
 func newInitCmd() *cobra.Command {

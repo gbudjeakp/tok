@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"tok/internal/analytics"
+	"github.com/gbudjeakp/tok/internal/analytics"
 )
 
 // Result holds both the filtered output and raw metrics.
@@ -82,9 +82,17 @@ func resolve(cmd string, args []string) (string, []string) {
 			rest = rest[1:]
 		}
 		if matched && len(rest) > 0 {
-			// Skip any runner flags (e.g. "uv run --python 3.12 pytest")
-			for len(rest) > 0 && strings.HasPrefix(rest[0], "-") {
-				rest = rest[1:]
+			// Skip runner flags and their values (e.g. "--python 3.12").
+			for len(rest) > 0 {
+				if strings.HasPrefix(rest[0], "-") {
+					rest = rest[1:]
+					// If next token looks like a flag value (not a command), skip it too.
+					if len(rest) > 0 && !strings.HasPrefix(rest[0], "-") && !looksLikeCommand(rest[0]) {
+						rest = rest[1:]
+					}
+				} else {
+					break
+				}
 			}
 			if len(rest) > 0 {
 				return filepath.Base(rest[0]), rest[1:]
@@ -92,6 +100,22 @@ func resolve(cmd string, args []string) (string, []string) {
 		}
 	}
 	return cmd, args
+}
+
+// looksLikeCommand returns true if s looks like an executable name rather than
+// a flag value (version string, path, number).
+func looksLikeCommand(s string) bool {
+	if len(s) == 0 {
+		return false
+	}
+	// Version strings start with a digit; paths contain slashes or dots mid-word.
+	if s[0] >= '0' && s[0] <= '9' {
+		return false
+	}
+	if strings.ContainsAny(s, "/") {
+		return false
+	}
+	return true
 }
 
 // smallOutputThreshold: outputs shorter than this pass through as-is.

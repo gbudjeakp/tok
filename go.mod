@@ -1,4 +1,4 @@
-module tok
+module github.com/gbudjeakp/tok
 
 go 1.26.4
 
