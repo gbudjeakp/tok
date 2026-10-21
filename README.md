@@ -28,6 +28,16 @@ tok init -g              # Claude Code
 
 Reload VS Code / restart Claude after `tok init`.
 
+### Updating
+
+```bash
+tok upgrade              # go install @latest, reports before/after version
+tok doctor               # diagnose hook/skill/PATH health after upgrading
+```
+
+Tagged releases (`vX.Y.Z`) also publish prebuilt binaries for macOS/Linux/Windows
+(amd64/arm64) to [GitHub Releases](https://github.com/gbudjeakp/tok/releases) via GoReleaser.
+
 ---
 
 ## Commands
@@ -45,6 +55,8 @@ Reload VS Code / restart Claude after `tok init`.
 | `tok session` | Transcript adoption report |
 | `tok mode [lite\|full\|ultra\|off]` | Set skill injection intensity (no arg: show current) |
 | `tok board [--no-open]` | Local HTML dashboard — tokens saved per day, streak, top commands |
+| `tok doctor` | Diagnose hook/skill/PATH health |
+| `tok upgrade` | Update to the latest version |
 | `tok init -g [--copilot]` | Install hook + inject skill |
 
 `tok learn` also auto-fires in the background every 24h.
