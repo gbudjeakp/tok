@@ -1,6 +1,6 @@
 module github.com/gbudjeakp/tok
 
-go 1.26.4
+go 1.23.0
 
 require github.com/spf13/cobra v1.8.1
 
