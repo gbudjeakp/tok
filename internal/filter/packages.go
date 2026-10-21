@@ -88,7 +88,6 @@ func brewList(output string) string {
 }
 
 // npmList: strip tree decorations, keep name@version.
-var reNpmTreeLine = regexp.MustCompile(`^[├└─│\s]+(@?[a-zA-Z0-9@/_.-]+)$`)
 var reNpmPkg = regexp.MustCompile(`(@?[a-zA-Z0-9@/_.-]+@[\d.]+[^\s]*)`)
 
 func npmList(output string) string {

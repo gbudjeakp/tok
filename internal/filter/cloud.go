@@ -129,7 +129,6 @@ func awsGeneric(output string) string {
 
 // pulumiOp: strip header URL and duration lines, keep resource changes.
 var rePulumiNoise = regexp.MustCompile(`(?i)(Updating:|View Live:|Duration:|Permalink:|warning: pulumi)`)
-var rePulumiChange = regexp.MustCompile(`(?i)(^\s+[+~\-] |error:|failed)`)
 
 func pulumiOp(output string) string {
 	lines := strings.Split(strings.TrimSpace(output), "\n")

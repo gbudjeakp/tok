@@ -49,7 +49,6 @@ var (
 	reModified = regexp.MustCompile(`(?m)^\s+modified:\s+(.+)$`)
 	reDeleted  = regexp.MustCompile(`(?m)^\s+deleted:\s+(.+)$`)
 	reNewFile  = regexp.MustCompile(`(?m)^\s+new file:\s+(.+)$`)
-	reUntrack  = regexp.MustCompile(`(?m)^\s+(.+\S)\s*$`)
 	reStagedSec = regexp.MustCompile(`(?s)Changes to be committed:(.+?)(?:\n\n|\z)`)
 	reNotStaged = regexp.MustCompile(`(?s)Changes not staged for commit:(.+?)(?:\n\n|\z)`)
 	reUntracked = regexp.MustCompile(`(?s)Untracked files:(.+?)(?:\n\n|\z)`)
@@ -112,8 +111,6 @@ func joinShort(files []string, max int) string {
 	return strings.Join(files[:max], ", ") + fmt.Sprintf(" +%d", len(files)-max)
 }
 
-var reLogLine = regexp.MustCompile(`^([a-f0-9]{7,})\s+(.+)\s+<(.+)>\s+(.+)$`)
-
 // gitLogForced re-runs git log with a compact format, stripping format flags.
 func gitLogForced(userArgs []string) string {
 	// Strip any --format/--pretty/--oneline flags the caller passed.
@@ -135,21 +132,6 @@ func gitLogForced(userArgs []string) string {
 		return stderr
 	}
 	return stdout
-}
-
-// gitLog is kept for the pass-through case where output is already compact.
-func gitLog(out string) string {
-	lines := strings.Split(strings.TrimSpace(out), "\n")
-	var result []string
-	for _, l := range lines {
-		l = strings.TrimSpace(l)
-		if l == "" {
-			continue
-		}
-		// Already in oneline format: keep as-is
-		result = append(result, l)
-	}
-	return strings.Join(result, "\n") + "\n"
 }
 
 func gitDiff(out string) string {

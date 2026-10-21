@@ -187,21 +187,6 @@ func Filterable(cmd string, args []string) (effectiveCmd string, matched bool) {
 }
 
 
-// passthrough runs the command unchanged and records no savings.
-func passthrough(cmd string, args []string) int {
-	c := exec.Command(cmd, args...)
-	c.Stdin = os.Stdin
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	if err := c.Run(); err != nil {
-		if exitErr, ok := err.(*exec.ExitError); ok {
-			return exitErr.ExitCode()
-		}
-		fmt.Fprintln(os.Stderr, err)
-		return 1
-	}
-	return 0
-}
 
 // run executes a command and captures stdout + stderr separately.
 func run(name string, args []string) (stdout, stderr string, exitCode int) {

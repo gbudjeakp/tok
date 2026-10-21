@@ -50,7 +50,6 @@ func filterTest(cmd string, args []string) (*Result, error) {
 }
 
 var (
-	reGoFail    = regexp.MustCompile(`(?m)^--- FAIL:`)
 	reGoOk      = regexp.MustCompile(`(?m)^ok\s+`)
 	reGoFailPkg = regexp.MustCompile(`(?m)^FAIL\s+`)
 )

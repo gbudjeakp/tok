@@ -66,12 +66,6 @@ var wasteNoise = map[string]bool{
 	"pushd": true, "popd": true, "dirs": true,
 }
 
-type wasteRecord struct {
-	cmd   string
-	count int
-	estTok int // rough estimated tokens wasted (all unfiltered runs)
-}
-
 func runWaste(days int) error {
 	transcripts, err := copilotTranscripts()
 	if err != nil || len(transcripts) == 0 {

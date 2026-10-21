@@ -42,11 +42,6 @@ func runDiscover(sinceDays int) error {
 	}
 
 	// Count opportunities
-	type opp struct {
-		cmd   string
-		count int
-		est   string
-	}
 	counts := map[string]int{}
 	for _, line := range hist {
 		parts := strings.Fields(line)
@@ -133,9 +128,9 @@ func shellHistory() []string {
 			if strings.HasPrefix(l, ": ") {
 				parts := strings.SplitN(l, ";", 2)
 				if len(parts) == 2 {
-					// Check timestamp
+					// Check timestamp — ts stays 0 if the line doesn't match, which is fine below.
 					var ts int64
-					fmt.Sscanf(parts[0], ": %d:", &ts)
+					_, _ = fmt.Sscanf(parts[0], ": %d:", &ts)
 					if ts > 0 && ts < cutoff {
 						continue
 					}

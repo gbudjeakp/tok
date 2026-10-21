@@ -7,6 +7,7 @@ import (
 )
 
 func TestCheckCache_FirstCallEmpty(t *testing.T) {
+	t.Setenv("TOK_DATA_DIR", t.TempDir())
 	// Clear the cache to avoid cross-test interference.
 	cacheMu.Lock()
 	cmdMap = map[string]cacheEntry{}
@@ -19,6 +20,7 @@ func TestCheckCache_FirstCallEmpty(t *testing.T) {
 }
 
 func TestCheckCache_SameOutputWithinTTL(t *testing.T) {
+	t.Setenv("TOK_DATA_DIR", t.TempDir())
 	cacheMu.Lock()
 	cmdMap = map[string]cacheEntry{}
 	cacheMu.Unlock()
@@ -33,6 +35,7 @@ func TestCheckCache_SameOutputWithinTTL(t *testing.T) {
 }
 
 func TestCheckCache_DifferentOutputNoMark(t *testing.T) {
+	t.Setenv("TOK_DATA_DIR", t.TempDir())
 	cacheMu.Lock()
 	cmdMap = map[string]cacheEntry{}
 	cacheMu.Unlock()
@@ -46,6 +49,7 @@ func TestCheckCache_DifferentOutputNoMark(t *testing.T) {
 }
 
 func TestCheckCache_ExpiredTTL(t *testing.T) {
+	t.Setenv("TOK_DATA_DIR", t.TempDir())
 	cacheMu.Lock()
 	cmdMap = map[string]cacheEntry{}
 	cacheMu.Unlock()
@@ -57,7 +61,7 @@ func TestCheckCache_ExpiredTTL(t *testing.T) {
 	key := cacheKey("git", []string{"log"})
 	cacheMu.Lock()
 	e := cmdMap[key]
-	e.when = time.Now().Add(-60 * time.Second)
+	e.When = time.Now().Add(-60 * time.Second)
 	cmdMap[key] = e
 	cacheMu.Unlock()
 

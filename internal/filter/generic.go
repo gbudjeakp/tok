@@ -44,7 +44,6 @@ func filterBuild(cmd string, args []string) (*Result, error) {
 	return &Result{Stdout: out, ExitCode: ec, OrigLen: orig, OutLen: len(out), FilterID: cmd + "-build"}, nil
 }
 
-var reBuildNoise = regexp.MustCompile(`(?i)^(\s*Compiling|\s*Checking|\s*Downloading|\s*Updating|\s*Finished|\s*Fresh|   Locking|\s*warning\[E0)`)
 var reCargoError = regexp.MustCompile(`(?i)^(error(\[E\d+\])?|warning):`)
 
 func buildErrors(output string) string {

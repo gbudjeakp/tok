@@ -18,6 +18,9 @@ type Entry struct {
 }
 
 func DataDir() (string, error) {
+	if override := os.Getenv("TOK_DATA_DIR"); override != "" {
+		return override, os.MkdirAll(override, 0700)
+	}
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return "", err
@@ -46,7 +49,9 @@ func Record(cmd, filterID string, origBytes, outBytes int) {
 	defer f.Close()
 	e := Entry{Cmd: cmd, FilterID: filterID, OrigB: origBytes, OutB: outBytes, TS: time.Now().Unix()}
 	b, _ := json.Marshal(e)
-	f.Write(append(b, '\n'))
+	if _, err := f.Write(append(b, '\n')); err != nil {
+		return
+	}
 }
 
 func Load() ([]Entry, error) {
