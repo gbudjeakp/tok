@@ -43,6 +43,8 @@ Reload VS Code / restart Claude after `tok init`.
 | `tok learn [--global]` | Mine transcripts for failure patterns → `CLAUDE.local.md` |
 | `tok lockdeps [path]` | Compact lock file summary (package-lock, go.sum, Cargo.lock) |
 | `tok session` | Transcript adoption report |
+| `tok mode [lite\|full\|ultra\|off]` | Set skill injection intensity (no arg: show current) |
+| `tok board [--no-open]` | Local HTML dashboard — tokens saved per day, streak, top commands |
 | `tok init -g [--copilot]` | Install hook + inject skill |
 
 `tok learn` also auto-fires in the background every 24h.

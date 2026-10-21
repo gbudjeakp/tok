@@ -7,7 +7,17 @@ import (
 	"strings"
 )
 
-const skillBlock = `
+const blockStart = "<!-- tok-skill: start — remove this block to disable -->"
+const blockEnd = "<!-- tok-skill: end -->"
+
+const liteBlock = `
+<!-- tok-skill: start — remove this block to disable -->
+## Tok: Response Brevity
+Be terse. Drop filler and hedging. Never drop not/never/no, numbers, exact errors.
+<!-- tok-skill: end -->
+`
+
+const fullBlock = `
 <!-- tok-skill: start — remove this block to disable -->
 ## Tok: Response Brevity
 Be terse. Drop: articles, pleasantries, hedging, filler.
@@ -21,26 +31,64 @@ Never restate what a tool result just showed — reference it directly.
 <!-- tok-skill: end -->
 `
 
-// Inject writes the tok skill block into the agent instruction file at path.
-// If the block already exists it replaces it in-place.
-func Inject(path string) error {
+const ultraBlock = `
+<!-- tok-skill: start — remove this block to disable -->
+## Tok: Response Brevity
+Be terse. Drop: articles, pleasantries, hedging, filler.
+Never drop: not/never/no, numbers, technical terms, exact errors.
+Fragments OK. Code, commits, PR bodies: normal prose.
+
+## Tok: Cache Alignment
+Place stable content (file contents, instructions) before volatile content
+(tool results, current errors) so provider KV-cache prefixes stay stable.
+Never restate what a tool result just showed — reference it directly.
+
+## Tok: Minimal Diff
+Before writing code, stop at the first option that holds: reuse existing
+repo code, use the standard library, write one line, or write the minimum
+that works. Never skip validation, error handling, or security for brevity.
+<!-- tok-skill: end -->
+`
+
+func blockFor(mode string) string {
+	switch mode {
+	case "lite":
+		return liteBlock
+	case "ultra":
+		return ultraBlock
+	case "off":
+		return ""
+	default:
+		return fullBlock
+	}
+}
+
+// Inject writes the tok skill block (sized per mode) into the agent
+// instruction file at path. If the block already exists it replaces it in-place.
+// mode="off" removes the block entirely.
+func Inject(path, mode string) error {
+	if mode == "off" {
+		return Remove(path)
+	}
+	block := blockFor(mode)
+
 	data, err := os.ReadFile(path)
 	if os.IsNotExist(err) {
-		return os.WriteFile(path, []byte(strings.TrimSpace(skillBlock)+"\n"), 0644)
+		return os.WriteFile(path, []byte(strings.TrimSpace(block)+"\n"), 0644)
 	}
 	if err != nil {
 		return err
 	}
 
 	content := string(data)
-	start := strings.Index(content, "<!-- tok-skill: start")
-	end := strings.Index(content, "<!-- tok-skill: end -->")
+	start := strings.Index(content, blockStart)
+	end := strings.Index(content, blockEnd)
 	if start != -1 && end != -1 {
 		// Replace existing block
-		content = content[:start] + strings.TrimLeft(skillBlock, "\n") + content[end+len("<!-- tok-skill: end -->"):]
+		content = content[:start] + strings.TrimLeft(block, "\n") + content[end+len(blockEnd):]
 	} else {
 		// Append
-		content = strings.TrimRight(content, "\n") + "\n\n" + strings.TrimSpace(skillBlock) + "\n"
+		content = strings.TrimRight(content, "\n") + "\n\n" + strings.TrimSpace(block) + "\n"
 	}
 	return os.WriteFile(path, []byte(content), 0644)
 }
@@ -55,13 +103,22 @@ func Remove(path string) error {
 		return err
 	}
 	content := string(data)
-	start := strings.Index(content, "<!-- tok-skill: start")
-	end := strings.Index(content, "<!-- tok-skill: end -->")
+	start := strings.Index(content, blockStart)
+	end := strings.Index(content, blockEnd)
 	if start == -1 || end == -1 {
 		return nil
 	}
-	content = content[:start] + content[end+len("<!-- tok-skill: end -->")+1:]
+	content = content[:start] + content[end+len(blockEnd)+1:]
 	return os.WriteFile(path, []byte(strings.TrimRight(content, "\n")+"\n"), 0644)
+}
+
+// HasBlock reports whether path currently contains a tok skill block.
+func HasBlock(path string) bool {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return false
+	}
+	return strings.Contains(string(data), blockStart)
 }
 
 // DefaultFiles returns the agent instruction files to inject into for the cwd.
@@ -97,3 +154,31 @@ func DefaultFiles(copilot bool) []string {
 	}
 	return candidates
 }
+
+// InjectedFiles scans the usual instruction-file locations (cwd + home) and
+// returns the ones that currently contain a tok skill block. Used by
+// `tok mode` to re-inject at the new intensity without requiring --copilot.
+func InjectedFiles() []string {
+	cwd, _ := os.Getwd()
+	home, _ := os.UserHomeDir()
+
+	var all []string
+	if home != "" {
+		all = append(all,
+			filepath.Join(home, ".copilot", "copilot-instructions.md"),
+			filepath.Join(home, ".claude", "CLAUDE.md"),
+		)
+	}
+	for _, name := range []string{"CLAUDE.md", "AGENTS.md", "GEMINI.md"} {
+		all = append(all, filepath.Join(cwd, name))
+	}
+
+	var found []string
+	for _, p := range all {
+		if HasBlock(p) {
+			found = append(found, p)
+		}
+	}
+	return found
+}
+

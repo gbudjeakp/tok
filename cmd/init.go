@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/gbudjeakp/tok/internal/config"
 	"github.com/gbudjeakp/tok/internal/hook"
 	"github.com/gbudjeakp/tok/internal/skill"
 )
@@ -57,13 +58,14 @@ Examples:
 
 			// Layer 2: skill injection
 			if !noSkill {
+				mode := config.Load().Mode
 				injected := 0
 				for _, path := range skill.DefaultFiles(copilot) {
-					if err := skill.Inject(path); err != nil {
+					if err := skill.Inject(path, mode); err != nil {
 						fmt.Fprintf(os.Stderr, "skill %s: %v\n", path, err)
 						continue
 					}
-					fmt.Printf("✓ Skill injected: %s\n", path)
+					fmt.Printf("✓ Skill injected (%s): %s\n", mode, path)
 					injected++
 				}
 				if injected == 0 {

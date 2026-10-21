@@ -15,7 +15,7 @@ import (
 var knownSubcmds = map[string]bool{
 	"init": true, "gain": true, "hook": true, "discover": true,
 	"session": true, "prove": true, "learn": true, "check": true,
-	"waste": true, "lockdeps": true, "bench": true,
+	"waste": true, "lockdeps": true, "bench": true, "mode": true, "board": true,
 	"version": true, "help": true, "completion": true,
 }
 

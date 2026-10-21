@@ -45,5 +45,7 @@ func init() {
 	rootCmd.AddCommand(newWasteCmd())
 	rootCmd.AddCommand(newLockdepsCmd())
 	rootCmd.AddCommand(newBenchCmd())
+	rootCmd.AddCommand(newModeCmd())
+	rootCmd.AddCommand(newBoardCmd())
 	rootCmd.AddCommand(newVersionCmd())
 }
