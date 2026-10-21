@@ -7,9 +7,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// Version is set at build time via -ldflags "-X github.com/gbudjeakp/tok/cmd.Version=...".
+// GoReleaser fills this in from the git tag; `go install .` leaves it as "dev".
+var Version = "dev"
+
 var rootCmd = &cobra.Command{
-	Use:   "tok",
-	Short: "Three-layer AI token reducer",
+	Use:     "tok",
+	Short:   "Three-layer AI token reducer",
+	Version: Version,
 	Long: `tok cuts LLM token usage across three layers:
 
   Layer 1  Shell output    tok git status, tok go test ./...
@@ -47,5 +52,7 @@ func init() {
 	rootCmd.AddCommand(newBenchCmd())
 	rootCmd.AddCommand(newModeCmd())
 	rootCmd.AddCommand(newBoardCmd())
+	rootCmd.AddCommand(newDoctorCmd())
+	rootCmd.AddCommand(newUpgradeCmd())
 	rootCmd.AddCommand(newVersionCmd())
 }

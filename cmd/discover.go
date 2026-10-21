@@ -168,7 +168,7 @@ func newVersionCmd() *cobra.Command {
 		Use:   "version",
 		Short: "Print version",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("tok v0.1.0")
+			fmt.Printf("tok %s\n", Version)
 		},
 	}
 }

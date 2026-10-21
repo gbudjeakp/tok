@@ -16,6 +16,7 @@ var knownSubcmds = map[string]bool{
 	"init": true, "gain": true, "hook": true, "discover": true,
 	"session": true, "prove": true, "learn": true, "check": true,
 	"waste": true, "lockdeps": true, "bench": true, "mode": true, "board": true,
+	"doctor": true, "upgrade": true,
 	"version": true, "help": true, "completion": true,
 }
 
