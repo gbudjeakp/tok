@@ -25,9 +25,11 @@ Never drop: not/never/no, numbers, technical terms, exact errors.
 Fragments OK. Code, commits, PR bodies: normal prose.
 
 ## Tok: Cache Alignment
-Place stable content (file contents, instructions) before volatile content
-(tool results, current errors) so provider KV-cache prefixes stay stable.
-Never restate what a tool result just showed — reference it directly.
+Provider prompt caching (Anthropic/OpenAI/Gemini) only hits when the prefix is
+byte-identical to a prior request, so:
+- Never re-paste or reorder earlier file contents/instructions already in context — reference them.
+- Don't put timestamps, request IDs, or other per-turn noise early; if unavoidable, put it last.
+- Treat conversation history as append-only within a turn — editing or reordering earlier content breaks the cached prefix for every token after it.
 <!-- tok-skill: end -->
 `
 
@@ -39,9 +41,11 @@ Never drop: not/never/no, numbers, technical terms, exact errors.
 Fragments OK. Code, commits, PR bodies: normal prose.
 
 ## Tok: Cache Alignment
-Place stable content (file contents, instructions) before volatile content
-(tool results, current errors) so provider KV-cache prefixes stay stable.
-Never restate what a tool result just showed — reference it directly.
+Provider prompt caching (Anthropic/OpenAI/Gemini) only hits when the prefix is
+byte-identical to a prior request, so:
+- Never re-paste or reorder earlier file contents/instructions already in context — reference them.
+- Don't put timestamps, request IDs, or other per-turn noise early; if unavoidable, put it last.
+- Treat conversation history as append-only within a turn — editing or reordering earlier content breaks the cached prefix for every token after it.
 
 ## Tok: Minimal Diff
 Before writing code, stop at the first option that holds: reuse existing

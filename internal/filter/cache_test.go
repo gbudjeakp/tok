@@ -1,6 +1,7 @@
 package filter
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -91,5 +92,73 @@ func TestTTLFor_KnownCommands(t *testing.T) {
 func TestTTLFor_DefaultUnknown(t *testing.T) {
 	if got := ttlFor("somethingobscure"); got != defaultTTL {
 		t.Fatalf("unknown command should use defaultTTL, got %v", got)
+	}
+}
+
+func TestJaccard_Identical(t *testing.T) {
+	a := []uint32{1, 2, 3}
+	if got := jaccard(a, a); got != 1 {
+		t.Fatalf("identical sets should have similarity 1, got %v", got)
+	}
+}
+
+func TestJaccard_Disjoint(t *testing.T) {
+	a := []uint32{1, 2, 3}
+	b := []uint32{4, 5, 6}
+	if got := jaccard(a, b); got != 0 {
+		t.Fatalf("disjoint sets should have similarity 0, got %v", got)
+	}
+}
+
+func TestJaccard_PartialOverlap(t *testing.T) {
+	a := []uint32{1, 2, 3, 4}
+	b := []uint32{1, 2, 5, 6}
+	// intersection={1,2}=2, union={1,2,3,4,5,6}=6 -> 2/6
+	want := 2.0 / 6.0
+	if got := jaccard(a, b); got != want {
+		t.Fatalf("want %v, got %v", want, got)
+	}
+}
+
+func TestCheckCache_NearDuplicateShowsDiff(t *testing.T) {
+	t.Setenv("TOK_DATA_DIR", t.TempDir())
+	cacheMu.Lock()
+	cmdMap = map[string]cacheEntry{}
+	cacheMu.Unlock()
+
+	// 20 lines, only the last one changes between calls (jaccard ~0.90).
+	base := make([]string, 20)
+	for i := range base {
+		base[i] = fmt.Sprintf("line%d", i)
+	}
+	first := strings.Join(base, "\n")
+	checkCache("docker", []string{"ps"}, first)
+
+	base[19] = "line19-changed"
+	second := strings.Join(base, "\n")
+	got := checkCache("docker", []string{"ps"}, second)
+
+	if !strings.HasPrefix(got, "[~") {
+		t.Fatalf("expected near-duplicate diff marker, got %q", got)
+	}
+	if !strings.Contains(got, "line19-changed") {
+		t.Fatalf("expected the changed line in the diff, got %q", got)
+	}
+	if strings.Contains(got, "line0\n") {
+		t.Fatalf("unchanged lines should not be repeated in the diff, got %q", got)
+	}
+}
+
+func TestCheckCache_DissimilarOutputNoNearDup(t *testing.T) {
+	t.Setenv("TOK_DATA_DIR", t.TempDir())
+	cacheMu.Lock()
+	cmdMap = map[string]cacheEntry{}
+	cacheMu.Unlock()
+
+	checkCache("docker", []string{"ps"}, "alpha\nbeta\ngamma\n")
+	got := checkCache("docker", []string{"ps"}, "one\ntwo\nthree\n")
+
+	if got != "" {
+		t.Fatalf("completely different output should not be treated as near-duplicate, got %q", got)
 	}
 }

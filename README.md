@@ -82,6 +82,17 @@ Runner prefixes (`uv run`, `npx`, `poetry run`, `bunx`, …) and absolute paths 
 
 ---
 
+## Techniques used (and why)
+
+tok's approach draws on a few documented token-reduction strategies, adapted to stay dependency-free (no ML runtime, no vector DB):
+
+- **Session cache with near-duplicate diffing** — exact repeats return a one-liner; outputs that are merely *similar* (e.g. one container restarted in `docker ps`) return only the changed lines via line-shingle Jaccard similarity. A lexical, embedding-free stand-in for the semantic caching idea in [GPTCache](https://github.com/zilliztech/GPTCache).
+- **Cache-alignment skill guidance** — the injected skill block now spells out the exact anti-pattern [Anthropic's prompt caching docs](https://platform.claude.com/docs/en/build-with-claude/prompt-caching) call out as the most common mistake: putting per-turn variable content (timestamps, IDs) *before* the stable prefix breaks the provider's cache for every subsequent token. Provider prompt caching (Anthropic/OpenAI/Gemini) can cut cached-token cost by up to 90% — the highest-leverage lever available, and one tok can only nudge via instructions since it doesn't sit in the API path.
+- **Signal-over-noise line filtering** — the per-tool filters (git, test runners, build tools) already keep error/fail/warn lines and drop progress noise; this is the same information-density idea behind [LLMLingua](https://github.com/microsoft/LLMLingua)'s prompt compression, done with keyword heuristics instead of a trained model (keeps tok a single static binary).
+- **Log deduplication** — consecutive identical lines collapse to `[Nx] line`, the cheapest form of redundancy removal.
+
+---
+
 ## vs. rtk
 
 tok is a superset. [rtk](https://github.com/rtk-ai/rtk) has ~8 filters and requires a manual prefix. tok has 25+ filters, a PreToolUse hook (no prefix needed), session cache, read guard, and waste analysis. You cannot run both — they double-execute every command.
